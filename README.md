@@ -28,6 +28,9 @@ Using this approach I can break the programming (not my game) down in to managea
 Assistance asked on Arduino forums and responses here:
 https://forum.arduino.cc/index.php?topic=614704.0
 
+Informative article
+https://rheingoldheavy.com/arduino-wire-library/
+
 I2C Devices within system - 
 (Addressing checked against https://learn.adafruit.com/i2c-addresses/the-list as may want to include 'official' manufacturer made I2C sensors)
 
