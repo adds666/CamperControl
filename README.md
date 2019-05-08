@@ -27,3 +27,29 @@ Using this approach I can break the programming (not my game) down in to managea
 
 Assistance asked on Arduino forums and responses here:
 https://forum.arduino.cc/index.php?topic=614704.0
+
+I2C Devices within system - 
+(Addressing checked against https://learn.adafruit.com/i2c-addresses/the-list as may want to include 'official' manufacturer made I2C sensors)
+
+(Current State)
+
+I2C_Master - 0x08 - To control and pass variables between input and output devices
+I2C_Slave01 - 0x09 - Button Panel 1 - Momentary pushbutton input interface and LED light status output
+
+(Future State)
+I2C_Slave02 - 0x0A - RFID Entry
+I2C_Slave03 - 0x0B - Alarm
+I2C_Slave04 - 0x0C - SMS Interface
+I2C_Slave05 - 0x0D - Radio IO (DTMF)
+I2C_Slave06 - 0x0E - Power Control
+I2C_Slave07 - 0x0F - Stereo Audio
+I2C_Slave08 - 0x12 - Light Control
+I2C_Slave09 - 0x14 - Button Panel 2
+
+Global Variables - 
+
+heaterOn - bool
+lightsOn - bool
+alarmArmed - bool
+alarmTriggered - bool
+personEntered - char / string
