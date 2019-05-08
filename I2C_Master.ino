@@ -21,7 +21,7 @@
 volatile bool heaterOn = false;
 volatile bool lightsOn = false;
 
-int triggerWire = 6;   // '3rd' buss wire in the I2C buss system - Pulled high with 10k resistors and low by other arduinos to trigger 'Polling'
+const int triggerWire = 6;   // '3rd' buss wire in the I2C buss system - Pulled high with 10k resistors and low by other arduinos to trigger 'Polling'
 
 void setup()
 {
