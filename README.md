@@ -13,13 +13,17 @@ https://i.imgur.com/izAKOZw.jpg
 Basic flow to be:
 
 1. Slave button pressed (momentary)
-2. Local State Change Detection and change local binary variable 
+2. Local State Change Detection and change local binary variable https://www.arduino.cc/en/Tutorial/StateChangeDetection
 3. Slave pulls Trigger line LOW momentarily
-4. Master polls Variables from all slaves in succession MasterReader
+4. Master polls Variables from all slaves in succession MasterReader https://www.arduino.cc/en/Tutorial/MasterReader
 5. Master compares results to find what has changed
 6. Master State change detection to change binary output variable (based on what has changed)
-7. Master writes output variables to all slaves in succession MasterWriter
+7. Master writes output variables to all slaves in succession MasterWriter https://www.arduino.cc/en/Tutorial/MasterWriter
 8. Slaves receive and change their Output variables and process action locally.
 
 
 Using this approach I can break the programming (not my game) down in to manageable chunks.
+
+
+Assistance asked on Arduino forums and responses here:
+https://forum.arduino.cc/index.php?topic=614704.0
