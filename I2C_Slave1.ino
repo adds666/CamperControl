@@ -17,8 +17,11 @@
 //------------------------------------------------ - //
 #include <Wire.h>
 
-volatile bool heaterOn = false;
-volatile bool lightsOn = false;
+//volatile bool heaterOn = false; // these have changed to int's below to make easier for Wire.write to handle
+//volatile bool lightsOn = false;
+
+int heaterOn = 0; 
+int lightsOn = 0;
 
 const int triggerWire = 6;   // '3rd' buss wire in the I2C buss system - Pulled high with 10k resistors and low by other arduinos to trigger 'Polling'
 
@@ -46,7 +49,11 @@ void loop() { // Look at all the buttons - act if one is pressed https://www.ard
   heaterButtonState = digitalRead(heaterButton);  // Read the pushbutton input pin
   if (heaterButtonState != lastHeaterButtonState) { // compare the heaterButtonState to its previous state
     if (heaterButtonState == HIGH)  { // If high then the button went from Off to On
-      heaterOn = !heaterOn; // Toggle Boolean variable
+      if (heaterOn = 0) {
+        heaterOn == 1;// Toggle Boolean variable
+      } else if (heaterOn = 1)  {
+        heaterOn == 0;
+      }
       pollRequest(); // Request the Master retrieves variables via the triggerWire
     }
   }
@@ -56,7 +63,11 @@ void loop() { // Look at all the buttons - act if one is pressed https://www.ard
   lightsButtonState = digitalRead(lightsButton);  // Read the pushbutton input pin
   if (lightsButtonState != lastLightsButtonState) { // compare the lightsButtonState to its previous state
     if (lightsButtonState == HIGH)  { // If high then the button went from Off to On
-      lightsOn = !lightsOn; // Toggle Boolean variable
+      if (lightsOn = 0) {
+        lightsOn == 1;
+      } else if (lightsOn = 1)  {
+        lightsOn == 0;
+      }
       pollRequest(); // Request the Master retrieves variables via the triggerWire
     }
   }
@@ -78,5 +89,6 @@ void pollRequest() {
 // function that executes whenever data is requested by master
 // this function is registered as an event, see setup()
 void requestEvent() {
-  Wire.write("hello "); // HOW DO I SEND THROUGH THE 2 BOOL VALUES OF THE VAR IN A SPECIFIC ORDER???
+  Wire.write(heaterOn);
+  Wire.write(lightsOn);// does this send the two variable values?
 }

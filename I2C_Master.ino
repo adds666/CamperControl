@@ -18,8 +18,11 @@
 //------------------------------------------------ - //
 #include<Wire.h>
 
-volatile bool heaterOn = false;
-volatile bool lightsOn = false;
+//volatile bool heaterOn = false;
+//volatile bool lightsOn = false; // These have been changed to ints so that Wire.write can handle them
+
+int heaterOn = 0;
+int lightsOn = 0; // Global variables that will be changed
 
 const int triggerWire = 6;   // '3rd' buss wire in the I2C buss system - Pulled high with 10k resistors and low by other arduinos to trigger 'Polling'
 
@@ -43,10 +46,7 @@ void pollSlaves() {
   Wire.requestFrom(0x09, 2);  // request 2 bytes (number of Variables) from device address 0x09
 
   while (Wire.available()) { // slave may send less than requested
-
-//  HOW DO I GET THE TWO BOOL VARIABLES FROM THE SLAVE IN TO THE VARIABLES HERE
-    
-    char c = Wire.read(); // receive a byte as character
-    Serial.print(c);         // print the character
+    int heaterOn = Wire.read(); // receive a byte as int
+    int lightsOn = Wire.read(); // receive a byte as int
   }
 }
