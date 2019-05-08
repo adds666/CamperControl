@@ -43,6 +43,9 @@ void pollSlaves() {
   Wire.requestFrom(0x09, 2);  // request 2 bytes (number of Variables) from device address 0x09
 
   while (Wire.available()) { // slave may send less than requested
+
+//  HOW DO I GET THE TWO BOOL VARIABLES FROM THE SLAVE IN TO THE VARIABLES HERE
+    
     char c = Wire.read(); // receive a byte as character
     Serial.print(c);         // print the character
   }
