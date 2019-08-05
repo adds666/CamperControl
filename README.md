@@ -1,6 +1,15 @@
 # CamperControl
 Control system for Campervan 
 
+This git is an amalgamation of many different peoples code in an attempt to create a 'networked' array of arduinos. Each arduino should perform a fairly small function and pass on its findings to the others to also process and react
+
+Files so far:
+Address_Setup - used to write hard values to Eeprom for each arduino
+Rolling_Master - Base code to enable circular communication between all devices (This code will be 'transposed' in to each of the devices below)
+
+dtmf_relay - Enables DTMF codes from a RF radio to change variables and control devices
+
+
 Following on from a question on the Arduino StackExchange I developed a system for having a "rolling master".
 
 The design objective is to have:
