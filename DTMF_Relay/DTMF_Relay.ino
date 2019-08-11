@@ -25,6 +25,12 @@
 
 
 
+// Adams Edit:
+// Changed all hardware outputs to a software variable - ie it will change a variable to bool value and be translated across the patch
+// R1, 2, 3, 4 etc can be made any global system variable we want. - this will change the output if left as is - or can be a mechanism to change the input 
+// It should be noted - this is an input via DTMF input which affects output.
+
+
 
 #include <EEPROM.h>
 #include "Timer.h"
@@ -74,15 +80,19 @@ void setup() {
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
 
-  //control wires for relay board
+  //control wires for relay board // Trying to define pinMode output as variables
   pinMode(R1, OUTPUT);
-  digitalWrite(R1, HIGH);
+  // bool R1 = LOW;
+  // digitalWrite(R1, HIGH);
   pinMode(R2, OUTPUT);
-  digitalWrite(R2, HIGH);
+  // bool R2 = LOW;
+  // digitalWrite(R2, HIGH);
   pinMode(R3, OUTPUT);
-  digitalWrite(R3, HIGH);
+  // bool R3 = LOW;
+  //digitalWrite(R3, HIGH);
   pinMode(R4, OUTPUT);
-  digitalWrite(R4, HIGH);
+  // bool R4 = LOW;
+  //digitalWrite(R4, HIGH);
 
     //Read accessCode from EEPROM
   byte eepromAccessCode[codeLength];  
@@ -195,27 +205,35 @@ void processRelay(byte rCode) {
     case 1:
       Serial.println("in case 1");
       digitalWrite(R1, LOW);
+      //bool R1 = LOW;
       break;
     case 2:
       digitalWrite(R1, HIGH);
+      // bool R1 = HIGH;
       break;
     case 4:
       digitalWrite(R2, LOW);
+      // bool R2 = LOW;
       break;
     case 5:
       digitalWrite(R2, HIGH);
+      // bool R2 = HIGH;
       break;
     case 7:
       digitalWrite(R3, LOW);
+      // bool R3 = LOW;
       break;
     case 8:
       digitalWrite(R3, HIGH);
+      // bool R3 = HIGH;
       break;
     case 3:
       digitalWrite(R4, LOW);
+      // bool R4 = LOW;
       break;
     case 6:
-      digitalWrite(R4, HIGH);    
+      digitalWrite(R4, HIGH);
+      // bool R4 = HIGH;    
       break;
   }
 }

@@ -15,6 +15,21 @@
 #include <SoftwareSerial.h>
 #include <EEPROM.h>
 
+// From RTC_Light_alarm *********************/
+// and https://www.dummies.com/computers/arduino/how-to-display-the-time-for-your-arduino-clock-project/
+
+#include <RTClib.h> // RTC Library
+#include <Wire.h> // I2C Library
+
+RTC_DS1307 rtc;
+DateTime now;
+
+int timeHour; // Setup an integer called timeHour
+int timeMinute; // Setup an integer called timeMinute
+int timeSecond; // Setup an integer called timeSecond
+
+// ******************************************/
+
 // the data we broadcast to each other device
 struct
   {
@@ -180,6 +195,23 @@ void setup ()
   nextAddress = 0;
 
   randomTime = JKISS32 () % 500000;  // microseconds
+
+// From RTC_Light_Alarm **************************/
+// and https://www.dummies.com/computers/arduino/how-to-display-the-time-for-your-arduino-clock-project/
+
+  if(!rtc.begin())
+  {
+    Serial.println("Couldn't find RTC"); // Error Message!
+    while (1);  
+  }
+  if (!rtc.isrunning())
+  {
+    Serial.println("RTC is NOT running!"); // Error Message!
+   // Sync RTC with the system clock at the time of compilation
+   rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); // Uncomment – Compile – Upload (See Note)
+  }
+// **************************************************/
+  
   }  // end of setup
 
 // set the next expected address, wrap around at the maximum
@@ -239,6 +271,20 @@ void sendMessage ()
 
 void loop ()
   {
+
+// From RTC_Light_Alarm **************************/
+// and https://www.dummies.com/computers/arduino/how-to-display-the-time-for-your-arduino-clock-project/
+
+now = rtc.now(); // Get the current time
+
+int timeHour = now.hour(); // Get the hours right now and store them in an integer called h
+int timeMinute = now.minute(); // Get the minutes right now and store them in an integer called m
+int timeSecond = now.second(); // Get the seconds right now and store them in an integer called s
+
+
+  
+// **************************************************/
+    
   // incoming message?
   if (myChannel.update ())
     {

@@ -5,11 +5,19 @@ This git is an amalgamation of many different peoples code in an attempt to crea
 
 Files so far:
 Address_Setup - used to write hard values to Eeprom for each arduino
-Rolling_Master - Base code to enable circular communication between all devices (This code will be 'transposed' in to each of the devices below)
+Rolling_Master - Base code to enable circular communication between all devices (This code will be 'transposed' in to each of the devices below).
+Last digits in .ino name is address of device on network
+
+Push_Button_Panel-485-01
+Panel of buttons that turn on and off a number of variables
+
+RTC_Updater-485-02
+Small arduino that has a Real Time Clock attached - shared hours, minutes and seconds with the rest of the network
 
 dtmf_relay - Enables DTMF codes from a RF radio to change variables and control devices
 
 
+/////////////////////
 Following on from a question on the Arduino StackExchange I developed a system for having a "rolling master".
 
 The design objective is to have:

@@ -45,6 +45,30 @@ const byte XMIT_ENABLE_PIN = 4;
 //const byte LED_PIN = 13;
 //const byte SWITCH_PIN = A0;
 
+// action pins (Push_button_PAnel_485-01) *******************************************************
+
+// from Momentary_push_button.ino) *****************************************/
+const uint32_t debounceTime = 5; // 5 mSec, enough for most switches
+const uint8_t heaterButton = 6; // with N.O momentary pb switch to ground
+const uint8_t lightsButton = 7; // with N.O momentary pb switch to ground
+
+const bool heaterButtonSwitchOn = false;  // using INPUT_PULLUP
+const bool heaterButtonSwitchOff = true;
+const bool lightsButtonSwitchOn = false;
+const bool lightsButtonSwitchOff = true;
+
+
+bool lastHeaterButtonState = heaterButtonSwitchOn;
+bool newHeaterButtonState = heaterButtonSwitchOff;
+bool lastLightsButtonState = lightsButtonSwitchOn;
+bool newLightsButtonState = lightsButtonSwitchOff;
+
+// Global Variables used in RS485 comms
+bool heaterState = false;
+bool lightsState = false;
+
+// *************************************************************************/
+
 
 // times in microseconds
 const unsigned long TIME_BETWEEN_MESSAGES = 3000;
@@ -166,6 +190,12 @@ void setup ()
 //  pinMode (SWITCH_PIN, INPUT_PULLUP);
 //  pinMode (LED_PIN, OUTPUT);
 
+// from Momentary_push_button.ino) *****************************************/
+  pinMode (heaterButton, INPUT_PULLUP);
+  pinMode (lightsButton, INPUT_PULLUP);
+
+
+// *************************************************************************/
   // debugging pins
 //  pinMode (OK_PIN, OUTPUT);
 //  pinMode (TIMEOUT_PIN, OUTPUT);
@@ -209,8 +239,8 @@ void processMessage ()
   // handle the incoming message, depending on who it is from and the data in it
 
   // make our LED match the switch of the previous device in sequence
-  if (message.address == (myAddress - 1));
-    //digitalWrite (LED_PIN, message.switches [0]);
+  if (message.address == (myAddress - 1)); // determining who the message is from
+    //digitalWrite (LED_PIN, message.switches [0]); // doing something to our local variables depending on the message
 
   //digitalWrite (OK_PIN, LOW);
   } // end of processMessage
@@ -225,6 +255,7 @@ void sendMessage ()
   // fill in other stuff here (eg. switch positions, analog reads, etc.)
 
   // message.switches [0] = digitalRead (SWITCH_PIN);
+  // The above is trying to send an array one item which is the state of a detected switch pin
 
   // now send it
   digitalWrite (XMIT_ENABLE_PIN, HIGH);  // enable sending
@@ -239,6 +270,55 @@ void sendMessage ()
 
 void loop ()
   {
+
+    // from Momentary_push_button.ino) *****************************************/
+    // Check whether heaterButton has been pressed and change the Global Variable HeaterState if it has.
+    
+    newHeaterButtonState = digitalRead(heaterButton);
+
+    if(lastHeaterButtonState != newHeaterButtonState) // state changed
+    {
+      delay(debounceTime);
+      lastHeaterButtonState = newHeaterButtonState;
+
+      // push on, push off
+      if(newHeaterButtonState == heaterButtonSwitchOn && heaterState == false)
+      {
+        heaterState = true;
+        Serial.println(F("Switched Heater ON"));
+      }
+      else if(newHeaterButtonState == heaterButtonSwitchOn && heaterState == true)
+      {
+        heaterState = false;
+        Serial.println(F("Heater Switched OFF"));
+      }
+    }
+    
+    // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
+    
+    newLightsButtonState = digitalRead(lightsButton);
+
+    if(lastLightsButtonState != newLightsButtonState) // state changed
+    {
+      delay(debounceTime);
+      lastLightsButtonState = newLightsButtonState;
+
+      // push on, push off
+      if(newLightsButtonState == lightsButtonSwitchOn && lightsState == false)
+      {
+        lightsState = true;
+        Serial.println(F("Switched Lights ON"));
+      }
+      else if(newLightsButtonState == lightsButtonSwitchOn && lightsState == true)
+      {
+        lightsState = false;
+        Serial.println(F("Lights Switched OFF"));
+      }
+    }
+    // ****************************************************************************/
+
+
+    
   // incoming message?
   if (myChannel.update ())
     {
