@@ -51,21 +51,32 @@ const byte XMIT_ENABLE_PIN = 4;
 const uint32_t debounceTime = 5; // 5 mSec, enough for most switches
 const uint8_t heaterButton = 6; // with N.O momentary pb switch to ground
 const uint8_t lightsButton = 7; // with N.O momentary pb switch to ground
+const uint8_t sleepButton = 8; // with N.O momentary pb switch to ground
+const uint8_t emergencyButton = 9; // with N.O momentary pb switch to ground
 
 const bool heaterButtonSwitchOn = false;  // using INPUT_PULLUP
 const bool heaterButtonSwitchOff = true;
 const bool lightsButtonSwitchOn = false;
 const bool lightsButtonSwitchOff = true;
-
+const bool sleepButtonSwitchOn = false;
+const bool sleepButtonSwitchOff = true;
+const bool emergencyButtonSwitchOn = false;
+const bool emergencyButtonSwitchOff = true;
 
 bool lastHeaterButtonState = heaterButtonSwitchOn;
 bool newHeaterButtonState = heaterButtonSwitchOff;
 bool lastLightsButtonState = lightsButtonSwitchOn;
 bool newLightsButtonState = lightsButtonSwitchOff;
+bool lastSleepButtonState = sleepButtonSwitchOn;
+bool newSleepButtonState = sleepButtonSwitchOff;
+bool lastEmergencyButtonState = emergencyButtonSwitchOn;
+bool newEmergencyButtonState = emergencyButtonSwitchOff;
 
 // Global Variables used in RS485 comms
 bool heaterState = false;
 bool lightsState = false;
+bool sleepState = false;
+bool emergencyState = false;
 
 // *************************************************************************/
 
@@ -193,6 +204,8 @@ void setup ()
 // from Momentary_push_button.ino) *****************************************/
   pinMode (heaterButton, INPUT_PULLUP);
   pinMode (lightsButton, INPUT_PULLUP);
+  pinMode (sleepButton, INPUT_PULLUP);
+  pinMode (emergencyButton, INPUT_PULLUP);
 
 
 // *************************************************************************/
@@ -271,54 +284,12 @@ void sendMessage ()
 void loop ()
   {
 
-    // from Momentary_push_button.ino) *****************************************/
-    // Check whether heaterButton has been pressed and change the Global Variable HeaterState if it has.
+ void heaterButtonCheck();
+ void sleepButtonCheck();
+ void lightButtonCheck();
+ void emergencyButtonCheck();
     
-    newHeaterButtonState = digitalRead(heaterButton);
-
-    if(lastHeaterButtonState != newHeaterButtonState) // state changed
-    {
-      delay(debounceTime);
-      lastHeaterButtonState = newHeaterButtonState;
-
-      // push on, push off
-      if(newHeaterButtonState == heaterButtonSwitchOn && heaterState == false)
-      {
-        heaterState = true;
-        Serial.println(F("Switched Heater ON"));
-      }
-      else if(newHeaterButtonState == heaterButtonSwitchOn && heaterState == true)
-      {
-        heaterState = false;
-        Serial.println(F("Heater Switched OFF"));
-      }
-    }
-    
-    // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
-    
-    newLightsButtonState = digitalRead(lightsButton);
-
-    if(lastLightsButtonState != newLightsButtonState) // state changed
-    {
-      delay(debounceTime);
-      lastLightsButtonState = newLightsButtonState;
-
-      // push on, push off
-      if(newLightsButtonState == lightsButtonSwitchOn && lightsState == false)
-      {
-        lightsState = true;
-        Serial.println(F("Switched Lights ON"));
-      }
-      else if(newLightsButtonState == lightsButtonSwitchOn && lightsState == true)
-      {
-        lightsState = false;
-        Serial.println(F("Lights Switched OFF"));
-      }
-    }
-    // ****************************************************************************/
-
-
-    
+     
   // incoming message?
   if (myChannel.update ())
     {
@@ -372,3 +343,97 @@ void loop ()
     }  // end of switch on state
 
   }  // end of loop
+
+    
+ void heaterButtonCheck(){   
+    // from Momentary_push_button.ino) *****************************************/
+    // Check whether heaterButton has been pressed and change the Global Variable HeaterState if it has.
+    newHeaterButtonState = digitalRead(heaterButton);
+
+    if(lastHeaterButtonState != newHeaterButtonState) // state changed
+    {
+      delay(debounceTime);
+      lastHeaterButtonState = newHeaterButtonState;
+
+      // push on, push off
+      if(newHeaterButtonState == heaterButtonSwitchOn && heaterState == false)
+      {
+        heaterState = true;
+        Serial.println(F("Switched Heater ON"));
+      }
+      else if(newHeaterButtonState == heaterButtonSwitchOn && heaterState == true)
+      {
+        heaterState = false;
+        Serial.println(F("Heater Switched OFF"));
+      }
+    }
+ }
+
+void sleepButtonCheck(){
+    // Check whether heaterButton has been pressed and change the Global Variable HeaterState if it has.
+    newSleepButtonState = digitalRead(sleepButton);
+
+    if(lastSleepButtonState != newSleepButtonState) // state changed
+    {
+      delay(debounceTime);
+      lastSleepButtonState = newSleepButtonState;
+
+      // push on, push off
+      if(newSleepButtonState == SleepButtonSwitchOn && SleepState == false)
+      {
+        sleepState = true;
+        Serial.println(F("Switched sleep state ON"));
+      }
+      else if(newSleepButtonState == sleepButtonSwitchOn && sleepState == true)
+      {
+        sleepState = false;
+        Serial.println(F("Sleep state Switched OFF"));
+      }
+    }
+}
+
+void lightButtonCheck(){
+    // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
+    newLightsButtonState = digitalRead(lightsButton);
+
+    if(lastLightsButtonState != newLightsButtonState) // state changed
+    {
+      delay(debounceTime);
+      lastLightsButtonState = newLightsButtonState;
+
+      // push on, push off
+      if(newLightsButtonState == lightsButtonSwitchOn && lightsState == false)
+      {
+        lightsState = true;
+        Serial.println(F("Switched Lights ON"));
+      }
+      else if(newLightsButtonState == lightsButtonSwitchOn && lightsState == true)
+      {
+        lightsState = false;
+        Serial.println(F("Lights Switched OFF"));
+      }
+    }
+}
+
+void emergencyButtonCheck(){
+    // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
+    newEmergencyButtonState = digitalRead(emergencyButton);
+
+    if(lastEmergencyButtonState != newEmergencyButtonState) // state changed
+    {
+      delay(debounceTime);
+      lastEmergencyButtonState = newEmergencyButtonState;
+
+      // push on, push off
+      if(newEmergencyButtonState == emergencyButtonSwitchOn && emergencyState == false)
+      {
+        emergencyState = true;
+        Serial.println(F("Emergency State ON"));
+      }
+      else if(newEmergencyButtonState == emergencyButtonSwitchOn && emergencyState == true)
+      {
+        emergencyState = false;
+        Serial.println(F("Emergency state OFF"));
+      }
+    }
+}
