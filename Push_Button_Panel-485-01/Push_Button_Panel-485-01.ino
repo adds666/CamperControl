@@ -19,8 +19,7 @@
 struct
   {
   byte address;
-  byte switches [10];
-  int  status;
+  bool boolStates [4];
   }  message;
 
 const unsigned long BAUD_RATE = 9600;
@@ -77,6 +76,12 @@ bool heaterState = false;
 bool lightsState = false;
 bool sleepState = false;
 bool emergencyState = false;
+
+int timeHour; // Setup an integer called timeHour
+int timeMinute; // Setup an integer called timeMinute
+int timeSecond; // Setup an integer called timeSecond
+
+bool boolStates[4] = {heaterState, lightsState, sleepState, emergencyState};
 
 // *************************************************************************/
 
@@ -252,7 +257,7 @@ void processMessage ()
   // handle the incoming message, depending on who it is from and the data in it
 
   // make our LED match the switch of the previous device in sequence
-  if (message.address == (myAddress - 1)); // determining who the message is from
+  if (message.address == (02)); // determining who the message is from
     //digitalWrite (LED_PIN, message.switches [0]); // doing something to our local variables depending on the message
 
   //digitalWrite (OK_PIN, LOW);
@@ -268,8 +273,12 @@ void sendMessage ()
   // fill in other stuff here (eg. switch positions, analog reads, etc.)
 
   // message.switches [0] = digitalRead (SWITCH_PIN);
-  // The above is trying to send an array one item which is the state of a detected switch pin
 
+  message.boolStates [0] = heaterState;
+  message.boolStates [1] = lightsState;
+  message.boolStates [2] = sleepState;
+  message.boolStates [3] = emergencyState;
+  
   // now send it
   digitalWrite (XMIT_ENABLE_PIN, HIGH);  // enable sending
   myChannel.sendMsg ((byte *) &message, sizeof message);
@@ -284,12 +293,11 @@ void sendMessage ()
 void loop ()
   {
 
- void heaterButtonCheck();
- void sleepButtonCheck();
- void lightButtonCheck();
- void emergencyButtonCheck();
+     heaterButtonCheck();
+     sleepButtonCheck();
+     lightButtonCheck();
+     emergencyButtonCheck();
     
-     
   // incoming message?
   if (myChannel.update ())
     {
@@ -367,7 +375,7 @@ void loop ()
         Serial.println(F("Heater Switched OFF"));
       }
     }
- }
+ } // End of heaterButtonCheck();
 
 void sleepButtonCheck(){
     // Check whether heaterButton has been pressed and change the Global Variable HeaterState if it has.
@@ -379,7 +387,7 @@ void sleepButtonCheck(){
       lastSleepButtonState = newSleepButtonState;
 
       // push on, push off
-      if(newSleepButtonState == SleepButtonSwitchOn && SleepState == false)
+      if(newSleepButtonState == sleepButtonSwitchOn && sleepState == false)
       {
         sleepState = true;
         Serial.println(F("Switched sleep state ON"));
@@ -390,7 +398,7 @@ void sleepButtonCheck(){
         Serial.println(F("Sleep state Switched OFF"));
       }
     }
-}
+} // End of sleepButtonCheck();
 
 void lightButtonCheck(){
     // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
@@ -413,7 +421,7 @@ void lightButtonCheck(){
         Serial.println(F("Lights Switched OFF"));
       }
     }
-}
+} // End of lightButtonCheck();
 
 void emergencyButtonCheck(){
     // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
@@ -436,4 +444,4 @@ void emergencyButtonCheck(){
         Serial.println(F("Emergency state OFF"));
       }
     }
-}
+} // End of emergencyButtonCheck();

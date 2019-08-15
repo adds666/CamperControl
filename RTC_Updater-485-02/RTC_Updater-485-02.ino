@@ -24,9 +24,18 @@
 RTC_DS1307 rtc;
 DateTime now;
 
+// Global Variables used in RS485 comms
+bool heaterState = false;
+bool lightsState = false;
+bool sleepState = false;
+bool emergencyState = false;
+
 int timeHour; // Setup an integer called timeHour
 int timeMinute; // Setup an integer called timeMinute
 int timeSecond; // Setup an integer called timeSecond
+
+int timeData[3] = {timeHour, timeMinute, timeSecond};
+
 
 // ******************************************/
 
@@ -34,8 +43,7 @@ int timeSecond; // Setup an integer called timeSecond
 struct
   {
   byte address;
-  byte switches [10];
-  int  status;
+  int timeData [3];
   }  message;
 
 const unsigned long BAUD_RATE = 9600;
@@ -241,9 +249,13 @@ void processMessage ()
   // handle the incoming message, depending on who it is from and the data in it
 
   // make our LED match the switch of the previous device in sequence
-  if (message.address == (myAddress - 1));
+  if (message.address == (01));
     //digitalWrite (LED_PIN, message.switches [0]);
-
+    heaterState == (message.boolStates [0]);
+    lightsState == (message.boolStates [1]);
+    sleepState == (message.boolStates [2]);
+    emergencyState == (message.boolStates [3]);
+    
   //digitalWrite (OK_PIN, LOW);
   } // end of processMessage
 
@@ -258,6 +270,10 @@ void sendMessage ()
 
   // message.switches [0] = digitalRead (SWITCH_PIN);
 
+  message.timeData [0] = timeHour;
+  message.timeData [1] = timeMinute;
+  message.timeData [2] = timeSecond;
+
   // now send it
   digitalWrite (XMIT_ENABLE_PIN, HIGH);  // enable sending
   myChannel.sendMsg ((byte *) &message, sizeof message);
@@ -271,20 +287,9 @@ void sendMessage ()
 
 void loop ()
   {
-
-// From RTC_Light_Alarm **************************/
-// and https://www.dummies.com/computers/arduino/how-to-display-the-time-for-your-arduino-clock-project/
-
-now = rtc.now(); // Get the current time
-
-int timeHour = now.hour(); // Get the hours right now and store them in an integer called h
-int timeMinute = now.minute(); // Get the minutes right now and store them in an integer called m
-int timeSecond = now.second(); // Get the seconds right now and store them in an integer called s
-
-
-  
-// **************************************************/
     
+  updateTime();
+
   // incoming message?
   if (myChannel.update ())
     {
@@ -338,3 +343,13 @@ int timeSecond = now.second(); // Get the seconds right now and store them in an
     }  // end of switch on state
 
   }  // end of loop
+
+void updateTime(){
+    // From RTC_Light_Alarm **************************/
+    // and https://www.dummies.com/computers/arduino/how-to-display-the-time-for-your-arduino-clock-project/
+    now = rtc.now(); // Get the current time
+
+      timeHour = now.hour(); // Get the hours right now and store them in an integer called h
+      timeMinute = now.minute(); // Get the minutes right now and store them in an integer called m
+      timeSecond = now.second(); // Get the seconds right now and store them in an integer called s
+  } // End of updateTime();
