@@ -19,6 +19,7 @@
 struct
   {
   byte address;
+  int timeData [3];
   bool boolStates [4];
   }  message;
 
@@ -53,6 +54,11 @@ const uint8_t lightsButton = 7; // with N.O momentary pb switch to ground
 const uint8_t sleepButton = 8; // with N.O momentary pb switch to ground
 const uint8_t emergencyButton = 9; // with N.O momentary pb switch to ground
 
+const byte heaterIndicator = 10; // 
+const byte lightsIndicator = 11; // 
+const byte sleepIndicator = 12; // 
+const byte emergencyIndicator = 13; // 
+
 const bool heaterButtonSwitchOn = false;  // using INPUT_PULLUP
 const bool heaterButtonSwitchOff = true;
 const bool lightsButtonSwitchOn = false;
@@ -84,7 +90,6 @@ int timeSecond; // Setup an integer called timeSecond
 bool boolStates[4] = {heaterState, lightsState, sleepState, emergencyState};
 
 // *************************************************************************/
-
 
 // times in microseconds
 const unsigned long TIME_BETWEEN_MESSAGES = 3000;
@@ -221,6 +226,11 @@ void setup ()
 //  pinMode (SEARCHING_PIN, OUTPUT);
 //  pinMode (ERROR_PIN, OUTPUT);
 
+  pinMode (heaterIndicator, OUTPUT);
+  pinMode (lightsIndicator, OUTPUT);
+  pinMode (sleepIndicator, OUTPUT);
+  pinMode (emergencyIndicator, OUTPUT);
+
   // seed the PRNG
   Seed_JKISS32 (myAddress + 1000);
 
@@ -257,9 +267,14 @@ void processMessage ()
   // handle the incoming message, depending on who it is from and the data in it
 
   // make our LED match the switch of the previous device in sequence
-  if (message.address == (02)); // determining who the message is from
-    //digitalWrite (LED_PIN, message.switches [0]); // doing something to our local variables depending on the message
-
+  
+  if (message.address == (02));
+    //digitalWrite (LED_PIN, message.switches [0]);
+    
+    timeHour == (message.timeData [0]);
+    timeMinute == (message.timeData [1]);
+    timeSecond == (message.timeData [2]);
+    
   //digitalWrite (OK_PIN, LOW);
   } // end of processMessage
 
@@ -297,6 +312,7 @@ void loop ()
      sleepButtonCheck();
      lightButtonCheck();
      emergencyButtonCheck();
+     indicatorCheck();
     
   // incoming message?
   if (myChannel.update ())
@@ -445,3 +461,41 @@ void emergencyButtonCheck(){
       }
     }
 } // End of emergencyButtonCheck();
+
+void indicatorCheck(){
+    if(heaterState == false)
+    {
+      digitalWrite (heaterIndicator, LOW);
+    }
+    else if(heaterState == true)
+    {
+      digitalWrite (heaterIndicator, HIGH);
+    }
+
+    if(lightsState == false)
+    {
+      digitalWrite (lightsIndicator, LOW);
+    }
+    else if(lightsState == true)
+    {
+      digitalWrite (lightsIndicator, HIGH);
+    }
+
+    if(sleepState == false)
+    {
+      digitalWrite (sleepIndicator, LOW);
+    }
+    else if(sleepState == true)
+    {
+      digitalWrite (sleepIndicator, HIGH);
+    }
+
+    if(emergencyState == false)
+    {
+      digitalWrite (emergencyIndicator, LOW);
+    }
+    else if(emergencyState == true)
+    {
+      digitalWrite (emergencyIndicator, HIGH);
+    }
+} // End of indicatorCheck();

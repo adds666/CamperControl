@@ -24,26 +24,12 @@
 RTC_DS1307 rtc;
 DateTime now;
 
-// Global Variables used in RS485 comms
-bool heaterState = false;
-bool lightsState = false;
-bool sleepState = false;
-bool emergencyState = false;
-
-int timeHour; // Setup an integer called timeHour
-int timeMinute; // Setup an integer called timeMinute
-int timeSecond; // Setup an integer called timeSecond
-
-int timeData[3] = {timeHour, timeMinute, timeSecond};
-
-
-// ******************************************/
-
 // the data we broadcast to each other device
 struct
   {
   byte address;
   int timeData [3];
+  bool boolStates [4];
   }  message;
 
 const unsigned long BAUD_RATE = 9600;
@@ -68,6 +54,24 @@ const byte XMIT_ENABLE_PIN = 4;
 //const byte LED_PIN = 13;
 //const byte SWITCH_PIN = A0;
 
+const byte heaterIndicator = 10; // 
+const byte lightsIndicator = 11; // 
+const byte sleepIndicator = 12; // 
+const byte emergencyIndicator = 13; // 
+
+// Global Variables used in RS485 comms
+bool heaterState = false;
+bool lightsState = false;
+bool sleepState = false;
+bool emergencyState = false;
+
+int timeHour; // Setup an integer called timeHour
+int timeMinute; // Setup an integer called timeMinute
+int timeSecond; // Setup an integer called timeSecond
+
+int timeData[3] = {timeHour, timeMinute, timeSecond};
+
+// ******************************************/
 
 // times in microseconds
 const unsigned long TIME_BETWEEN_MESSAGES = 3000;
@@ -196,6 +200,12 @@ void setup ()
 //  pinMode (SEARCHING_PIN, OUTPUT);
 //  pinMode (ERROR_PIN, OUTPUT);
 
+  pinMode (heaterIndicator, OUTPUT);
+  pinMode (lightsIndicator, OUTPUT);
+  pinMode (sleepIndicator, OUTPUT);
+  pinMode (emergencyIndicator, OUTPUT);
+
+
   // seed the PRNG
   Seed_JKISS32 (myAddress + 1000);
 
@@ -249,8 +259,10 @@ void processMessage ()
   // handle the incoming message, depending on who it is from and the data in it
 
   // make our LED match the switch of the previous device in sequence
+  
   if (message.address == (01));
     //digitalWrite (LED_PIN, message.switches [0]);
+    
     heaterState == (message.boolStates [0]);
     lightsState == (message.boolStates [1]);
     sleepState == (message.boolStates [2]);
@@ -289,6 +301,7 @@ void loop ()
   {
     
   updateTime();
+  indicatorCheck();
 
   // incoming message?
   if (myChannel.update ())
@@ -353,3 +366,42 @@ void updateTime(){
       timeMinute = now.minute(); // Get the minutes right now and store them in an integer called m
       timeSecond = now.second(); // Get the seconds right now and store them in an integer called s
   } // End of updateTime();
+
+
+void indicatorCheck(){
+    if(heaterState == false)
+    {
+      digitalWrite (heaterIndicator, LOW);
+    }
+    else if(heaterState == true)
+    {
+      digitalWrite (heaterIndicator, HIGH);
+    }
+
+    if(lightsState == false)
+    {
+      digitalWrite (lightsIndicator, LOW);
+    }
+    else if(lightsState == true)
+    {
+      digitalWrite (lightsIndicator, HIGH);
+    }
+
+    if(sleepState == false)
+    {
+      digitalWrite (sleepIndicator, LOW);
+    }
+    else if(sleepState == true)
+    {
+      digitalWrite (sleepIndicator, HIGH);
+    }
+
+    if(emergencyState == false)
+    {
+      digitalWrite (emergencyIndicator, LOW);
+    }
+    else if(emergencyState == true)
+    {
+      digitalWrite (emergencyIndicator, HIGH);
+    }
+} // End of indicatorCheck();
