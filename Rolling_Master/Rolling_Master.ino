@@ -35,15 +35,15 @@ const byte TX_PIN = 3;
 const byte XMIT_ENABLE_PIN = 4;
 
 // debugging pins
-//const byte OK_PIN = 6;
-//const byte TIMEOUT_PIN = 7;
-//const byte SEND_PIN = 8;
-//const byte SEARCHING_PIN = 9;
-//const byte ERROR_PIN = 10;
+const byte OK_PIN = 11;
+const byte TIMEOUT_PIN = 12;
+const byte SEND_PIN = 13;
+const byte SEARCHING_PIN = A5;
+const byte ERROR_PIN = A4;
 
 // action pins (demo)
-//const byte LED_PIN = 13;
-//const byte SWITCH_PIN = A0;
+const byte LED_PIN = 10;
+const byte SWITCH_PIN = 6;
 
 
 // times in microseconds
@@ -163,15 +163,15 @@ void setup ()
   pinMode (XMIT_ENABLE_PIN, OUTPUT);
 
   // demo action pins
-//  pinMode (SWITCH_PIN, INPUT_PULLUP);
-//  pinMode (LED_PIN, OUTPUT);
+  pinMode (SWITCH_PIN, INPUT_PULLUP);
+  pinMode (LED_PIN, OUTPUT);
 
   // debugging pins
-//  pinMode (OK_PIN, OUTPUT);
-//  pinMode (TIMEOUT_PIN, OUTPUT);
-//  pinMode (SEND_PIN, OUTPUT);
-//  pinMode (SEARCHING_PIN, OUTPUT);
-//  pinMode (ERROR_PIN, OUTPUT);
+  pinMode (OK_PIN, OUTPUT);
+  pinMode (TIMEOUT_PIN, OUTPUT);
+  pinMode (SEND_PIN, OUTPUT);
+  pinMode (SEARCHING_PIN, OUTPUT);
+  pinMode (ERROR_PIN, OUTPUT);
 
   // seed the PRNG
   Seed_JKISS32 (myAddress + 1000);
@@ -204,7 +204,7 @@ void processMessage ()
       { }  // give up
     }  // can't receive our address
 
-  //digitalWrite (OK_PIN, HIGH);
+  digitalWrite (OK_PIN, HIGH);
 
   // handle the incoming message, depending on who it is from and the data in it
 
@@ -218,20 +218,20 @@ void processMessage ()
 // Here to send our own message
 void sendMessage ()
   {
-  //digitalWrite (SEND_PIN, HIGH);
+  digitalWrite (SEND_PIN, HIGH);
   memset (&message, 0, sizeof message);
   message.address = myAddress;
 
   // fill in other stuff here (eg. switch positions, analog reads, etc.)
 
-  // message.switches [0] = digitalRead (SWITCH_PIN);
+  message.switches [0] = digitalRead (SWITCH_PIN);
 
   // now send it
   digitalWrite (XMIT_ENABLE_PIN, HIGH);  // enable sending
   myChannel.sendMsg ((byte *) &message, sizeof message);
   digitalWrite (XMIT_ENABLE_PIN, LOW);  // disable sending
   setNextAddress (myAddress + 1);
-  //digitalWrite (SEND_PIN, LOW);
+  digitalWrite (SEND_PIN, LOW);
 
   lastCommsTime = micros ();   // we count our own send as activity
   randomTime = JKISS32 () % 500000;  // microseconds
@@ -266,9 +266,9 @@ void loop ()
       if (micros () - lastCommsTime >= (noMessagesTimeout + randomTime))
         {
         Serial.println (F("No devices."));
-        //digitalWrite (SEARCHING_PIN, HIGH);
+        digitalWrite (SEARCHING_PIN, HIGH);
         sendMessage ();
-        //digitalWrite (SEARCHING_PIN, LOW);
+        digitalWrite (SEARCHING_PIN, LOW);
         }
       break;
 
@@ -282,10 +282,10 @@ void loop ()
 
     // a device did not respond in its slot time, move onto the next one
     case STATE_TIMED_OUT:
-      //digitalWrite (TIMEOUT_PIN, HIGH);
+      digitalWrite (TIMEOUT_PIN, HIGH);
       setNextAddress (nextAddress + 1);
       lastCommsTime += PACKET_TIME;
-      //digitalWrite (TIMEOUT_PIN, LOW);
+      digitalWrite (TIMEOUT_PIN, LOW);
       state = STATE_RECENT_RESPONSE;  // pretend we got the missing response
       break;
 
