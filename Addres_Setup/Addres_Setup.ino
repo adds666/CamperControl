@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 
-const byte myAddress = 3;
-const byte numberOfDevices = 4;
+const byte myAddress = 0;
+const byte numberOfDevices = 2;
 
 void setup ()
   {

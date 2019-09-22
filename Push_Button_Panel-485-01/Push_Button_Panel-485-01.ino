@@ -16,10 +16,16 @@
 #include <EEPROM.h>
 
 // the data we broadcast to each other device
+//struct
+//  {
+//  byte address;
+//  byte switches [10];
+//  int  status;
+//  }  message;
+  
 struct
   {
   byte address;
-  int timeData [3];
   bool boolStates [4];
   }  message;
 
@@ -82,10 +88,6 @@ bool heaterState = false;
 bool lightsState = false;
 bool sleepState = false;
 bool emergencyState = false;
-
-int timeHour; // Setup an integer called timeHour
-int timeMinute; // Setup an integer called timeMinute
-int timeSecond; // Setup an integer called timeSecond
 
 bool boolStates[4] = {heaterState, lightsState, sleepState, emergencyState};
 
@@ -267,13 +269,16 @@ void processMessage ()
   // handle the incoming message, depending on who it is from and the data in it
 
   // make our LED match the switch of the previous device in sequence
+//  if (message.address == (myAddress - 1));
+//    digitalWrite (LED_PIN, message.switches [0]);
+//
+//  digitalWrite (OK_PIN, LOW);
   
-  if (message.address == (02));
-    //digitalWrite (LED_PIN, message.switches [0]);
-    
-    timeHour == (message.timeData [0]);
-    timeMinute == (message.timeData [1]);
-    timeSecond == (message.timeData [2]);
+  if (message.address == (1));
+      heaterState = (message.boolStates [0]);
+      lightsState = (message.boolStates [1]);
+      sleepState = (message.boolStates [2]);
+      emergencyState = (message.boolStates[3]);
     
   //digitalWrite (OK_PIN, LOW);
   } // end of processMessage

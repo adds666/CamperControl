@@ -210,9 +210,9 @@ void processMessage ()
 
   // make our LED match the switch of the previous device in sequence
   if (message.address == (myAddress - 1));
-    //digitalWrite (LED_PIN, message.switches [0]);
+    digitalWrite (LED_PIN, message.switches [0]);
 
-  //digitalWrite (OK_PIN, LOW);
+  digitalWrite (OK_PIN, LOW);
   } // end of processMessage
 
 // Here to send our own message

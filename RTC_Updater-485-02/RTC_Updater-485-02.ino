@@ -25,6 +25,13 @@ RTC_DS1307 rtc;
 DateTime now;
 
 // the data we broadcast to each other device
+//struct
+//  {
+//  byte address;
+//  byte switches [10];
+//  int  status;
+//  }  message;
+
 struct
   {
   byte address;
@@ -54,6 +61,7 @@ const byte XMIT_ENABLE_PIN = 4;
 //const byte LED_PIN = 13;
 //const byte SWITCH_PIN = A0;
 
+// Local Indicators
 const byte heaterIndicator = 10; // 
 const byte lightsIndicator = 11; // 
 const byte sleepIndicator = 12; // 
@@ -259,14 +267,18 @@ void processMessage ()
   // handle the incoming message, depending on who it is from and the data in it
 
   // make our LED match the switch of the previous device in sequence
+//  if (message.address == (myAddress - 1));
+//    digitalWrite (LED_PIN, message.switches [0]);
+//
+//  digitalWrite (OK_PIN, LOW);
   
   if (message.address == (01));
     //digitalWrite (LED_PIN, message.switches [0]);
     
-    heaterState == (message.boolStates [0]);
-    lightsState == (message.boolStates [1]);
-    sleepState == (message.boolStates [2]);
-    emergencyState == (message.boolStates [3]);
+    heaterState = (message.boolStates [0]);
+    lightsState = (message.boolStates [1]);
+    sleepState = (message.boolStates [2]);
+    emergencyState = (message.boolStates [3]);
     
   //digitalWrite (OK_PIN, LOW);
   } // end of processMessage
