@@ -215,9 +215,9 @@ void setup ()
 
 // from Momentary_push_button.ino) *****************************************/
   pinMode (heaterButton, INPUT_PULLUP);
-//  pinMode (lightsButton, INPUT_PULLUP);
-//  pinMode (sleepButton, INPUT_PULLUP);
-//  pinMode (emergencyButton, INPUT_PULLUP);
+  pinMode (lightsButton, INPUT_PULLUP);
+  pinMode (sleepButton, INPUT_PULLUP);
+  pinMode (emergencyButton, INPUT_PULLUP);
 
 
 // *************************************************************************/
@@ -229,9 +229,9 @@ void setup ()
 //  pinMode (ERROR_PIN, OUTPUT);
 
   pinMode (heaterIndicator, OUTPUT);
-//  pinMode (lightsIndicator, OUTPUT);
-//  pinMode (sleepIndicator, OUTPUT);
-//  pinMode (emergencyIndicator, OUTPUT);
+  pinMode (lightsIndicator, OUTPUT);
+  pinMode (sleepIndicator, OUTPUT);
+  pinMode (emergencyIndicator, OUTPUT);
 
   // seed the PRNG
   Seed_JKISS32 (myAddress + 1000);
@@ -314,10 +314,10 @@ void loop ()
   {
 
      heaterButtonCheck();
-//     sleepButtonCheck();
-//     lightButtonCheck();
-//     emergencyButtonCheck();
-//     indicatorCheck();
+     sleepButtonCheck();
+     lightButtonCheck();
+     emergencyButtonCheck();
+     indicatorCheck();
     
   // incoming message?
   if (myChannel.update ())
@@ -398,74 +398,74 @@ void loop ()
     }
  } // End of heaterButtonCheck();
 
-//void sleepButtonCheck(){
-//    // Check whether heaterButton has been pressed and change the Global Variable HeaterState if it has.
-//    newSleepButtonState = digitalRead(sleepButton);
-//
-//    if(lastSleepButtonState != newSleepButtonState) // state changed
-//    {
-//      delay(debounceTime);
-//      lastSleepButtonState = newSleepButtonState;
-//
-//      // push on, push off
-//      if(newSleepButtonState == sleepButtonSwitchOn && sleepState == false)
-//      {
-//        sleepState = true;
-//        Serial.println(F("Switched sleep state ON"));
-//      }
-//      else if(newSleepButtonState == sleepButtonSwitchOn && sleepState == true)
-//      {
-//        sleepState = false;
-//        Serial.println(F("Sleep state Switched OFF"));
-//      }
-//    }
-//} // End of sleepButtonCheck();
-//
-//void lightButtonCheck(){
-//    // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
-//    newLightsButtonState = digitalRead(lightsButton);
-//
-//    if(lastLightsButtonState != newLightsButtonState) // state changed
-//    {
-//      delay(debounceTime);
-//      lastLightsButtonState = newLightsButtonState;
-//
-//      // push on, push off
-//      if(newLightsButtonState == lightsButtonSwitchOn && lightsState == false)
-//      {
-//        lightsState = true;
-//        Serial.println(F("Switched Lights ON"));
-//      }
-//      else if(newLightsButtonState == lightsButtonSwitchOn && lightsState == true)
-//      {
-//        lightsState = false;
-//        Serial.println(F("Lights Switched OFF"));
-//      }
-//    }
-//} // End of lightButtonCheck();
-//
-//void emergencyButtonCheck(){
-//    // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
-//    newEmergencyButtonState = digitalRead(emergencyButton);
-//
-//    if(lastEmergencyButtonState != newEmergencyButtonState) // state changed
-//    {
-//      delay(debounceTime);
-//      lastEmergencyButtonState = newEmergencyButtonState;
-//
-//      // push on, push off
-//      if(newEmergencyButtonState == emergencyButtonSwitchOn && emergencyState == false)
-//      {
-//        emergencyState = true;
-//        Serial.println(F("Emergency State ON"));
-//      }
-//      else if(newEmergencyButtonState == emergencyButtonSwitchOn && emergencyState == true)
-//      {
-//        emergencyState = false;
-//        Serial.println(F("Emergency state OFF"));
-//      }
-//    }
-//} // End of emergencyButtonCheck();
+void sleepButtonCheck(){
+    // Check whether heaterButton has been pressed and change the Global Variable HeaterState if it has.
+    newSleepButtonState = digitalRead(sleepButton);
+
+    if(lastSleepButtonState != newSleepButtonState) // state changed
+    {
+      delay(debounceTime);
+      lastSleepButtonState = newSleepButtonState;
+
+      // push on, push off
+      if(newSleepButtonState == sleepButtonSwitchOn && sleepState == false)
+      {
+        sleepState = true;
+        Serial.println(F("Switched sleep state ON"));
+      }
+      else if(newSleepButtonState == sleepButtonSwitchOn && sleepState == true)
+      {
+        sleepState = false;
+        Serial.println(F("Sleep state Switched OFF"));
+      }
+    }
+} // End of sleepButtonCheck();
+
+void lightButtonCheck(){
+    // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
+    newLightsButtonState = digitalRead(lightsButton);
+
+    if(lastLightsButtonState != newLightsButtonState) // state changed
+    {
+      delay(debounceTime);
+      lastLightsButtonState = newLightsButtonState;
+
+      // push on, push off
+      if(newLightsButtonState == lightsButtonSwitchOn && lightsState == false)
+      {
+        lightsState = true;
+        Serial.println(F("Switched Lights ON"));
+      }
+      else if(newLightsButtonState == lightsButtonSwitchOn && lightsState == true)
+      {
+        lightsState = false;
+        Serial.println(F("Lights Switched OFF"));
+      }
+    }
+} // End of lightButtonCheck();
+
+void emergencyButtonCheck(){
+    // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
+    newEmergencyButtonState = digitalRead(emergencyButton);
+
+    if(lastEmergencyButtonState != newEmergencyButtonState) // state changed
+    {
+      delay(debounceTime);
+      lastEmergencyButtonState = newEmergencyButtonState;
+
+      // push on, push off
+      if(newEmergencyButtonState == emergencyButtonSwitchOn && emergencyState == false)
+      {
+        emergencyState = true;
+        Serial.println(F("Emergency State ON"));
+      }
+      else if(newEmergencyButtonState == emergencyButtonSwitchOn && emergencyState == true)
+      {
+        emergencyState = false;
+        Serial.println(F("Emergency state OFF"));
+      }
+    }
+} // End of emergencyButtonCheck();
 
 void indicatorCheck(){
     if(heaterState == false)
@@ -477,30 +477,30 @@ void indicatorCheck(){
       digitalWrite (heaterIndicator, HIGH);
     }
 
-//    if(lightsState == false)
-//    {
-//      digitalWrite (lightsIndicator, LOW);
-//    }
-//    else if(lightsState == true)
-//    {
-//      digitalWrite (lightsIndicator, HIGH);
-//    }
-//
-//    if(sleepState == false)
-//    {
-//      digitalWrite (sleepIndicator, LOW);
-//    }
-//    else if(sleepState == true)
-//    {
-//      digitalWrite (sleepIndicator, HIGH);
-//    }
-//
-//    if(emergencyState == false)
-//    {
-//      digitalWrite (emergencyIndicator, LOW);
-//    }
-//    else if(emergencyState == true)
-//    {
-//      digitalWrite (emergencyIndicator, HIGH);
-//    }
+    if(lightsState == false)
+    {
+      digitalWrite (lightsIndicator, LOW);
+    }
+    else if(lightsState == true)
+    {
+      digitalWrite (lightsIndicator, HIGH);
+    }
+
+    if(sleepState == false)
+    {
+      digitalWrite (sleepIndicator, LOW);
+    }
+    else if(sleepState == true)
+    {
+      digitalWrite (sleepIndicator, HIGH);
+    }
+
+    if(emergencyState == false)
+    {
+      digitalWrite (emergencyIndicator, LOW);
+    }
+    else if(emergencyState == true)
+    {
+      digitalWrite (emergencyIndicator, HIGH);
+    }
 } // End of indicatorCheck();
