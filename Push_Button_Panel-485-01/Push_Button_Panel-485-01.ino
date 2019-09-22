@@ -41,11 +41,11 @@ const byte TX_PIN = 3;
 const byte XMIT_ENABLE_PIN = 4;
 
 // debugging pins
-//const byte OK_PIN = 6;
-//const byte TIMEOUT_PIN = 7;
-//const byte SEND_PIN = 8;
-//const byte SEARCHING_PIN = 9;
-//const byte ERROR_PIN = 10;
+//const byte OK_PIN = 11;
+//const byte TIMEOUT_PIN = 12;
+//const byte SEND_PIN = 13;
+//const byte SEARCHING_PIN = A5;
+//const byte ERROR_PIN = A4;
 
 // action pins (demo)
 //const byte LED_PIN = 13;
@@ -54,7 +54,7 @@ const byte XMIT_ENABLE_PIN = 4;
 // action pins (Push_button_PAnel_485-01) *******************************************************
 
 // from Momentary_push_button.ino) *****************************************/
-const uint32_t debounceTime = 5; // 5 mSec, enough for most switches
+const uint32_t debounceTime = 5; // 20 mSec, enough for most switches
 const uint8_t heaterButton = 6; // with N.O momentary pb switch to ground
 const uint8_t lightsButton = 7; // with N.O momentary pb switch to ground
 const uint8_t sleepButton = 8; // with N.O momentary pb switch to ground
@@ -274,7 +274,7 @@ void processMessage ()
 //
 //  digitalWrite (OK_PIN, LOW);
   
-  if (message.address == (1));
+  if (message.address == (0));
       heaterState = (message.boolStates [0]);
       lightsState = (message.boolStates [1]);
       sleepState = (message.boolStates [2]);
@@ -304,7 +304,7 @@ void sendMessage ()
   myChannel.sendMsg ((byte *) &message, sizeof message);
   digitalWrite (XMIT_ENABLE_PIN, LOW);  // disable sending
   setNextAddress (myAddress + 1);
-  //digitalWrite (SEND_PIN, LOW);
+//  digitalWrite (SEND_PIN, LOW);
 
   lastCommsTime = micros ();   // we count our own send as activity
   randomTime = JKISS32 () % 500000;  // microseconds
@@ -346,9 +346,9 @@ void loop ()
       if (micros () - lastCommsTime >= (noMessagesTimeout + randomTime))
         {
         Serial.println (F("No devices."));
-        //digitalWrite (SEARCHING_PIN, HIGH);
+//        digitalWrite (SEARCHING_PIN, HIGH);
         sendMessage ();
-        //digitalWrite (SEARCHING_PIN, LOW);
+//        digitalWrite (SEARCHING_PIN, LOW);
         }
       break;
 
@@ -362,10 +362,10 @@ void loop ()
 
     // a device did not respond in its slot time, move onto the next one
     case STATE_TIMED_OUT:
-      //digitalWrite (TIMEOUT_PIN, HIGH);
+//      digitalWrite (TIMEOUT_PIN, HIGH);
       setNextAddress (nextAddress + 1);
       lastCommsTime += PACKET_TIME;
-      //digitalWrite (TIMEOUT_PIN, LOW);
+//      digitalWrite (TIMEOUT_PIN, LOW);
       state = STATE_RECENT_RESPONSE;  // pretend we got the missing response
       break;
 

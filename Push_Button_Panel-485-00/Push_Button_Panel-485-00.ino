@@ -54,7 +54,7 @@ const byte XMIT_ENABLE_PIN = 4;
 // action pins (Push_button_PAnel_485-01) *******************************************************
 
 // from Momentary_push_button.ino) *****************************************/
-const uint32_t debounceTime = 5; // 5 mSec, enough for most switches
+const uint32_t debounceTime = 5; // 20 mSec, enough for most switches
 const uint8_t heaterButton = 6; // with N.O momentary pb switch to ground
 const uint8_t lightsButton = 7; // with N.O momentary pb switch to ground
 const uint8_t sleepButton = 8; // with N.O momentary pb switch to ground

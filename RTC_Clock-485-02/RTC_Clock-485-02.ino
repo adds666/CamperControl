@@ -15,6 +15,10 @@
 #include <SoftwareSerial.h>
 #include <EEPROM.h>
 
+#include <Wire.h>
+#include <TimeLib.h>
+#include <DS1307RTC.h>
+
 // the data we broadcast to each other device
 //struct
 //  {
@@ -26,7 +30,8 @@
 struct
   {
   byte address;
-  bool boolStates [4];
+  int timeStates [3];
+  int dateStates [3];
   }  message;
 
 const unsigned long BAUD_RATE = 9600;
@@ -51,45 +56,17 @@ const byte XMIT_ENABLE_PIN = 4;
 //const byte LED_PIN = 13;
 //const byte SWITCH_PIN = A0;
 
-// action pins (Push_button_PAnel_485-01) *******************************************************
-
-// from Momentary_push_button.ino) *****************************************/
-const uint32_t debounceTime = 5; // 5 mSec, enough for most switches
-const uint8_t heaterButton = 6; // with N.O momentary pb switch to ground
-const uint8_t lightsButton = 7; // with N.O momentary pb switch to ground
-const uint8_t sleepButton = 8; // with N.O momentary pb switch to ground
-const uint8_t emergencyButton = 9; // with N.O momentary pb switch to ground
-
-const byte heaterIndicator = 10; // 
-const byte lightsIndicator = 11; // 
-const byte sleepIndicator = 12; // 
-const byte emergencyIndicator = 13; // 
-
-const bool heaterButtonSwitchOn = false;  // using INPUT_PULLUP
-const bool heaterButtonSwitchOff = true;
-const bool lightsButtonSwitchOn = false;
-const bool lightsButtonSwitchOff = true;
-const bool sleepButtonSwitchOn = false;
-const bool sleepButtonSwitchOff = true;
-const bool emergencyButtonSwitchOn = false;
-const bool emergencyButtonSwitchOff = true;
-
-bool lastHeaterButtonState = heaterButtonSwitchOn;
-bool newHeaterButtonState = heaterButtonSwitchOff;
-bool lastLightsButtonState = lightsButtonSwitchOn;
-bool newLightsButtonState = lightsButtonSwitchOff;
-bool lastSleepButtonState = sleepButtonSwitchOn;
-bool newSleepButtonState = sleepButtonSwitchOff;
-bool lastEmergencyButtonState = emergencyButtonSwitchOn;
-bool newEmergencyButtonState = emergencyButtonSwitchOff;
-
 // Global Variables used in RS485 comms
-bool heaterState = false;
-bool lightsState = false;
-bool sleepState = false;
-bool emergencyState = false;
+int timeHour;
+int timeMinute;
+int timeSecond;
 
-bool boolStates[4] = {heaterState, lightsState, sleepState, emergencyState};
+int dateDay;
+int dateMonth;
+int dateYear; 
+
+int timeStates[3] = {timeHour, timeMinute, timeSecond};
+int dateStates[3] = {dateDay, dateMonth, dateYear};
 
 // *************************************************************************/
 
@@ -213,13 +190,6 @@ void setup ()
 //  pinMode (SWITCH_PIN, INPUT_PULLUP);
 //  pinMode (LED_PIN, OUTPUT);
 
-// from Momentary_push_button.ino) *****************************************/
-  pinMode (heaterButton, INPUT_PULLUP);
-  pinMode (lightsButton, INPUT_PULLUP);
-  pinMode (sleepButton, INPUT_PULLUP);
-  pinMode (emergencyButton, INPUT_PULLUP);
-
-
 // *************************************************************************/
   // debugging pins
 //  pinMode (OK_PIN, OUTPUT);
@@ -227,11 +197,6 @@ void setup ()
 //  pinMode (SEND_PIN, OUTPUT);
 //  pinMode (SEARCHING_PIN, OUTPUT);
 //  pinMode (ERROR_PIN, OUTPUT);
-
-  pinMode (heaterIndicator, OUTPUT);
-  pinMode (lightsIndicator, OUTPUT);
-  pinMode (sleepIndicator, OUTPUT);
-  pinMode (emergencyIndicator, OUTPUT);
 
   // seed the PRNG
   Seed_JKISS32 (myAddress + 1000);
@@ -273,12 +238,6 @@ void processMessage ()
 //    digitalWrite (LED_PIN, message.switches [0]);
 //
 //  digitalWrite (OK_PIN, LOW);
-  
-  if (message.address == (0));
-      heaterState = (message.boolStates [0]);
-      lightsState = (message.boolStates [1]);
-      sleepState = (message.boolStates [2]);
-      emergencyState = (message.boolStates[3]);
     
   //digitalWrite (OK_PIN, LOW);
   } // end of processMessage
@@ -294,10 +253,10 @@ void sendMessage ()
 
   // message.switches [0] = digitalRead (SWITCH_PIN);
 
-  message.boolStates [0] = heaterState;
-  message.boolStates [1] = lightsState;
-  message.boolStates [2] = sleepState;
-  message.boolStates [3] = emergencyState;
+  message.timeStates [0] = timeHour;
+  message.timeStates [1] = timeMinute;
+  message.timeStates [2] = timeSecond;
+  
   
   // now send it
   digitalWrite (XMIT_ENABLE_PIN, HIGH);  // enable sending
@@ -310,14 +269,40 @@ void sendMessage ()
   randomTime = JKISS32 () % 500000;  // microseconds
   }  // end of sendMessage
 
+void print2digits(int number) {
+  if (number >= 0 && number < 10) {
+    Serial.write('0');
+  }
+  Serial.print(number);
+}
+
 void loop ()
   {
+    tmElements_t tm;
 
-     heaterButtonCheck();
-     sleepButtonCheck();
-     lightButtonCheck();
-     emergencyButtonCheck();
-     indicatorCheck();
+  if (RTC.read(tm)) {
+
+// Very eperimental - trying to get time out to int variables ready for
+// distribution via RS485
+    
+    timeHour = (print2digits(tm.Hour));
+    timeMinute = print2digits(tm.Minute);
+    timeSecond == print2digits(tm.Second);
+    dateDay == (tm.Day);
+    dateMonth == (tm.Month);
+    dateYear == (tmYearToCalendar(tm.Year));
+  } else {
+    if (RTC.chipPresent()) {
+      Serial.println("The DS1307 is stopped.  Please run the SetTime");
+      Serial.println("example to initialize the time and begin running.");
+      Serial.println();
+    } else {
+      Serial.println("DS1307 read error!  Please check the circuitry.");
+      Serial.println();
+    }
+    
+
+     
     
   // incoming message?
   if (myChannel.update ())
@@ -372,135 +357,3 @@ void loop ()
     }  // end of switch on state
 
   }  // end of loop
-
-    
- void heaterButtonCheck(){   
-    // from Momentary_push_button.ino) *****************************************/
-    // Check whether heaterButton has been pressed and change the Global Variable HeaterState if it has.
-    newHeaterButtonState = digitalRead(heaterButton);
-
-    if(lastHeaterButtonState != newHeaterButtonState) // state changed
-    {
-      delay(debounceTime);
-      lastHeaterButtonState = newHeaterButtonState;
-
-      // push on, push off
-      if(newHeaterButtonState == heaterButtonSwitchOn && heaterState == false)
-      {
-        heaterState = true;
-        Serial.println(F("Switched Heater ON"));
-      }
-      else if(newHeaterButtonState == heaterButtonSwitchOn && heaterState == true)
-      {
-        heaterState = false;
-        Serial.println(F("Heater Switched OFF"));
-      }
-    }
- } // End of heaterButtonCheck();
-
-void sleepButtonCheck(){
-    // Check whether heaterButton has been pressed and change the Global Variable HeaterState if it has.
-    newSleepButtonState = digitalRead(sleepButton);
-
-    if(lastSleepButtonState != newSleepButtonState) // state changed
-    {
-      delay(debounceTime);
-      lastSleepButtonState = newSleepButtonState;
-
-      // push on, push off
-      if(newSleepButtonState == sleepButtonSwitchOn && sleepState == false)
-      {
-        sleepState = true;
-        Serial.println(F("Switched sleep state ON"));
-      }
-      else if(newSleepButtonState == sleepButtonSwitchOn && sleepState == true)
-      {
-        sleepState = false;
-        Serial.println(F("Sleep state Switched OFF"));
-      }
-    }
-} // End of sleepButtonCheck();
-
-void lightButtonCheck(){
-    // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
-    newLightsButtonState = digitalRead(lightsButton);
-
-    if(lastLightsButtonState != newLightsButtonState) // state changed
-    {
-      delay(debounceTime);
-      lastLightsButtonState = newLightsButtonState;
-
-      // push on, push off
-      if(newLightsButtonState == lightsButtonSwitchOn && lightsState == false)
-      {
-        lightsState = true;
-        Serial.println(F("Switched Lights ON"));
-      }
-      else if(newLightsButtonState == lightsButtonSwitchOn && lightsState == true)
-      {
-        lightsState = false;
-        Serial.println(F("Lights Switched OFF"));
-      }
-    }
-} // End of lightButtonCheck();
-
-void emergencyButtonCheck(){
-    // Check whether lightsButton has been pressed and change the Global Variable lightsState if it has.
-    newEmergencyButtonState = digitalRead(emergencyButton);
-
-    if(lastEmergencyButtonState != newEmergencyButtonState) // state changed
-    {
-      delay(debounceTime);
-      lastEmergencyButtonState = newEmergencyButtonState;
-
-      // push on, push off
-      if(newEmergencyButtonState == emergencyButtonSwitchOn && emergencyState == false)
-      {
-        emergencyState = true;
-        Serial.println(F("Emergency State ON"));
-      }
-      else if(newEmergencyButtonState == emergencyButtonSwitchOn && emergencyState == true)
-      {
-        emergencyState = false;
-        Serial.println(F("Emergency state OFF"));
-      }
-    }
-} // End of emergencyButtonCheck();
-
-void indicatorCheck(){
-    if(heaterState == false)
-    {
-      digitalWrite (heaterIndicator, LOW);
-    }
-    else if(heaterState == true)
-    {
-      digitalWrite (heaterIndicator, HIGH);
-    }
-
-    if(lightsState == false)
-    {
-      digitalWrite (lightsIndicator, LOW);
-    }
-    else if(lightsState == true)
-    {
-      digitalWrite (lightsIndicator, HIGH);
-    }
-
-    if(sleepState == false)
-    {
-      digitalWrite (sleepIndicator, LOW);
-    }
-    else if(sleepState == true)
-    {
-      digitalWrite (sleepIndicator, HIGH);
-    }
-
-    if(emergencyState == false)
-    {
-      digitalWrite (emergencyIndicator, LOW);
-    }
-    else if(emergencyState == true)
-    {
-      digitalWrite (emergencyIndicator, HIGH);
-    }
-} // End of indicatorCheck();
