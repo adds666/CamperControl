@@ -240,6 +240,8 @@ void setup ()
   nextAddress = 0;
 
   randomTime = JKISS32 () % 500000;  // microseconds
+  Serial.println ("End of Setup");
+
   }  // end of setup
 
 // set the next expected address, wrap around at the maximum
@@ -254,7 +256,7 @@ void setNextAddress (const byte current)
 // Here to process an incoming message
 void processMessage ()
   {
-
+Serial.println("incoming message");
   // we cannot receive a message from ourself
   // someone must have given two devices the same address
   if (message.address == myAddress)
@@ -273,19 +275,23 @@ void processMessage ()
 //    digitalWrite (LED_PIN, message.switches [0]);
 //
 //  digitalWrite (OK_PIN, LOW);
-  
+  Serial.print("Heater State before is");
+  Serial.println(heaterState);
   if (message.address == (1));
       heaterState = (message.boolStates [0]);
       lightsState = (message.boolStates [1]);
       sleepState = (message.boolStates [2]);
       emergencyState = (message.boolStates[3]);
-    
+
+  Serial.print("Heater State after is");
+  Serial.println(heaterState);  
   //digitalWrite (OK_PIN, LOW);
   } // end of processMessage
 
 // Here to send our own message
 void sendMessage ()
   {
+    Serial.println ("SendMessage begin");
   //digitalWrite (SEND_PIN, HIGH);
   memset (&message, 0, sizeof message);
   message.address = myAddress;
@@ -377,6 +383,7 @@ void loop ()
  void heaterButtonCheck(){   
     // from Momentary_push_button.ino) *****************************************/
     // Check whether heaterButton has been pressed and change the Global Variable HeaterState if it has.
+    Serial.println ("Commence heaterButtonCheck");
     newHeaterButtonState = digitalRead(heaterButton);
 
     if(lastHeaterButtonState != newHeaterButtonState) // state changed
@@ -396,6 +403,7 @@ void loop ()
         Serial.println(F("Heater Switched OFF"));
       }
     }
+    Serial.println("heaterButtonCheck complete");
  } // End of heaterButtonCheck();
 
 void sleepButtonCheck(){
@@ -468,6 +476,7 @@ void emergencyButtonCheck(){
 } // End of emergencyButtonCheck();
 
 void indicatorCheck(){
+  Serial.println("Updating Indicators");
     if(heaterState == false)
     {
       digitalWrite (heaterIndicator, LOW);
@@ -503,4 +512,5 @@ void indicatorCheck(){
     {
       digitalWrite (emergencyIndicator, HIGH);
     }
+    Serial.println("Indicators are up to date");
 } // End of indicatorCheck();
